@@ -292,6 +292,8 @@ class PageInicio(tk.Frame):
 		with open('resultado.txt', 'w') as archivo:
 			archivo.write(str(variableEntrada))
 		archivo.close()
+		self.mensajeError.set("SE GUARDO LOS RESULTADOS EN UN ARCHIVO .TXT,SE ENCUENTRA JUNTO AL CODIGO FUENTE DEL PROYECTO ")
+	#funcion para graficar las coordenadas y tablas
 	def dibujarCoordenads(self,numdata, selfarreglo):
 		selfnumdata = numdata
 		inslist = []
