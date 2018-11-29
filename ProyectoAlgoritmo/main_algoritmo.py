@@ -196,32 +196,26 @@ class PageInicio(tk.Frame):
 	#Funcion para verificar si los campos estan vacios o no
 	def verificar(self):
 		
-			
 		if (self.url.get() != ''):
 			if (self.insertV.get() == True or self.mergeV.get() == True or self.quickV.get() == True or self.stoogeV.get() == True):
-				if self.numdata.get().isdigit() == True:
 					self.mensajeError.set("")
 					self.abrirArchivo2()
 					if len(self.arreglo) != 0:
-						print(self.numdata)
+						self.dibujarCoordenads()
 					self.arreglo = []
-				else:
-					self.mensajeError.set("Debe ingresar solo numeros en el campo 'Numero de elementos' ")
 			else:
 				self.mensajeError.set("Al menos selecciones uno de los algoritmos")
 		else:
 			if self.generarDato.get() != False:
 				if self.numero.get() != 0 and self.direccionArchivoGuardado.get() != '' and self.numero.get().isdigit() == True:
 					if (self.insertV.get() == True or self.mergeV.get() == True or self.quickV.get() == True or self.stoogeV.get() == True):
-						if self.numdata.get().isdigit() == True:
 							self.mensajeError.set("")
 							self.generarArreglos()
 							if len(self.arreglo) != 0:
-								#self.imprimir_grafico()
+								self.dibujarCoordenads()
 								print('listp')
 							self.arreglo = []
-						else:
-							self.mensajeError.set("Debe ingresar solo numeros en el campo 'Numero de elementos' ")
+							
 					else:
 						self.mensajeError.set("Al menos selecciones uno de los algoritmos")
 				else:
@@ -302,7 +296,7 @@ class PageInicio(tk.Frame):
 		# ordena y recorre los algoritmos
 		for index in range(5, 505, 5):  # se define el rango de 200 numeros de 5 en 5
 			nlist.append(index)
-			alist = [random.randint(1, 200) for _ in range(index)]
+			alist = [random.randint(1,200) for _ in range(index)]
 
 			# suavizando los arreglos
 			time1 = 0
@@ -319,35 +313,33 @@ class PageInicio(tk.Frame):
 
 				if self.insertV.get() == True:
 					start_time = time.time()
-			        self.insertionSort(alist1)
-			        ti = time.time() - start_time
-			        time1 += ti
-			        t = 1
+					self.insertionSort(alist1)
+					ti = time.time() - start_time
+					time1 += ti
+					t = 1
 
 				if self.mergeV.get() == True:
-			        start_time = time.time()
-			        self.mergeSort(alist2)
-			        tm = time.time() - start_time
-			        time2 += tm
-			        v = 1
+					start_time = time.time()
+					self.mergeSort(alist2)
+					tm = time.time() - start_time
+					time2 += tm
+					v = 1
 
-		        if self.quickV.get() == True:
-			        start_time = time.time()
-			        self.quickSort(alist3)
-			        tq = time.time() - start_time
-			        time3 += tq
-			        u = 1
+				if self.quickV.get() == True:
+					start_time = time.time()
+					self.quickSort(alist3)
+					tq = time.time() - start_time
+					time3 += tq
+					u = 1
 
-		    insrep.append(time1 / 3)
-		    mergerep.append(time2 / 3)
-		    quickrep.append(time3 / 3)
-
-
-		t = PrettyTable(['N', 'Insertion Sort Time', 'Merge Sort Time',
-		                 'Quick Sort Time'])  # se define el nombre de las columnas de la tabla
+			insrep.append(time1 / 3)
+			mergerep.append(time2 / 3)
+			quickrep.append(time3 / 3)
+		
+		t = PrettyTable(['N', 'Insertion Sort Time', 'Merge Sort Time','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
 
 		for index in range(0, len(insrep)):
-		      t.add_row([nlist[index], insrep[index], mergerep[index], quickrep[index]])
+			t.add_row([nlist[index], insrep[index], mergerep[index], quickrep[index]])
 		print(t)
 
 		# --------------Graficar y mostrar en pantalla -----------------
@@ -358,45 +350,44 @@ class PageInicio(tk.Frame):
 		
 
 		if (t==1 and v==0 and u==0):
-		    pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
-		    pyplot.legend(loc='upper left')
-		    pyplot.show()
+			pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
+			pyplot.legend(loc='upper left')
+			pyplot.show()
 		else:
-		    if (v==1 and t==0 and u==0):
-		        pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
-		        pyplot.legend(loc='upper left')
-		        pyplot.show()
-		    else:
-		        if (u==0 and t==0 and v==0):
-		            pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
-		            pyplot.legend(loc='upper left')
-		            pyplot.show()
-
+			if (v==1 and t==0 and u==0):
+				pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
+				pyplot.legend(loc='upper left')
+				pyplot.show()
+			else:
+				if (u==0 and t==0 and v==0):
+					pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
+					pyplot.legend(loc='upper left')
+					pyplot.show()
 
 		if t and v and u:
-		    pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
-		    pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
-		    pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
-		    pyplot.legend(loc='upper left')
-		    pyplot.show()
+			pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
+			pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
+			pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
+			pyplot.legend(loc='upper left')
+			pyplot.show()
 		else:
-		    if t and v:
-		        pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
-		        pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
-		        pyplot.legend(loc='upper left')
-		        pyplot.show()
-		    else:
-		        if t and u:
-		            pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
-		            pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
-		            pyplot.legend(loc='upper left')
-		            pyplot.show()
-		        else:
-		            if u and v:
-		                pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
-		                pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
-		                pyplot.legend(loc='upper left')
-		                pyplot.show()
+			if t and v:
+				pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
+				pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
+				pyplot.legend(loc='upper left')
+				pyplot.show()
+			else:
+				if t and u:
+					pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
+					pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
+					pyplot.legend(loc='upper left')
+					pyplot.show()
+				else:
+					if u and v:
+						pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
+						pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
+						pyplot.legend(loc='upper left')
+						pyplot.show()
 
 #segundo frame
 class PageTwo(tk.Frame):
