@@ -201,8 +201,12 @@ class PageInicio(tk.Frame):
 					self.mensajeError.set("")
 					self.abrirArchivo2()
 					if len(self.arreglo) != 0:
-						self.dibujarCoordenads()
-					self.arreglo = []
+						if self.numdata.get() == 0:
+							self.numdata.set(len(self.arreglo))
+						self.dibujarCoordenads(self.numdata.get(),self.arreglo)
+						
+					else:
+						self.mensajeError.set("NO EXISTE ELEMENTO EN EL ARREGLO")
 			else:
 				self.mensajeError.set("Al menos selecciones uno de los algoritmos")
 		else:
@@ -212,10 +216,11 @@ class PageInicio(tk.Frame):
 							self.mensajeError.set("")
 							self.generarArreglos()
 							if len(self.arreglo) != 0:
-								self.dibujarCoordenads()
-								print('listp')
-							self.arreglo = []
-							
+								if self.numdata.get() == 0:
+									self.numdata.set(len(self.arreglo))
+								self.dibujarCoordenads(self.numdata.get(),self.arreglo)
+							else:
+								self.mensajeError.set("NO EXISTE ELEMENTO EN EL ARREGLO")
 					else:
 						self.mensajeError.set("Al menos selecciones uno de los algoritmos")
 				else:
@@ -238,7 +243,7 @@ class PageInicio(tk.Frame):
 		self.botonGuardar['state'] = 'disabled'
 		self.numero['state'] = 'disabled'
 		self.numeros.set(0)
-
+#abrir el archivo y convertir el contenido en un arreglo
 	def abrirArchivo2(self):
 		array = []
 		array2 = []
@@ -258,9 +263,7 @@ class PageInicio(tk.Frame):
 	def guardar(self):
 		nombrearch=fd.asksaveasfilename(initialdir = "/",title = "Guardar como",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
 		if nombrearch!='':
-			archi1=open(nombrearch, "w")
-			archi1.close()
-		self.direccionArchivoGuardado.set( nombrearch + '.txt')
+			self.direccionArchivoGuardado.set( nombrearch + '.txt')
 
 #genera los numeros aleatorios
 	def generarArreglos(self):
@@ -283,29 +286,33 @@ class PageInicio(tk.Frame):
 			self.botonAbrirArchivo['state'] = 'active'
 			self.botonGuardar['state'] = 'disabled'
 			self.numero['state'] = 'disabled'
-	
-	def dibujarCoordenads(self):
+
+	#guardar los resultados de la tabla en un archivo txt en el directorio donde se encuentra el codigo fuente 
+	def crearArchivoYguardar(self,variableEntrada):
+		with open('resultado.txt', 'w') as archivo:
+			archivo.write(str(variableEntrada))
+		archivo.close()
+	def dibujarCoordenads(self,numdata, selfarreglo):
+		selfnumdata = numdata
 		inslist = []
 		insrep = []
 		mergerep = []  # arreglo de datos usando merge
 		quickrep = []  # arreglo de datos usando quick
 		nlist = []
+		alist = selfarreglo
+		self.limpiar()#limpiar la salida
+		t = 0 #insertion
+		v = 0 #merger
+		u = 0 #quick
 
-
-		# N=usuario*5 + 5
 		# ordena y recorre los algoritmos
-		for index in range(5, 505, 5):  # se define el rango de 200 numeros de 5 en 5
+		for index in range(5, selfnumdata,5):  # se define el rango de 200 numeros de 5 en 5
 			nlist.append(index)
-			alist = [random.randint(1,200) for _ in range(index)]
-
 			# suavizando los arreglos
 			time1 = 0
 			time2 = 0
 			time3 = 0
-			t = 0 #insertion
-			v = 0 #merger
-			u = 0 #quick
-
+			
 			for j in range(0, 2):
 				alist1 = list(alist)
 				alist2 = list(alist)
@@ -335,55 +342,75 @@ class PageInicio(tk.Frame):
 			insrep.append(time1 / 3)
 			mergerep.append(time2 / 3)
 			quickrep.append(time3 / 3)
-		
-		t = PrettyTable(['N', 'Insertion Sort Time', 'Merge Sort Time','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
-
-		for index in range(0, len(insrep)):
-			t.add_row([nlist[index], insrep[index], mergerep[index], quickrep[index]])
-		print(t)
-
-		# --------------Graficar y mostrar en pantalla -----------------
-		pyplot.xticks([10 * index for index in range(1, 500)])
+#---------------Graficar y mostrar en pantalla-----
+		pyplot.xticks([10 * index for index in range(1, selfnumdata)])
 
 		pyplot.xlabel('$N$')
 		pyplot.ylabel('$Time$')
-		
-
+		#Graficar en una tabla y coordenadas 
 		if (t==1 and v==0 and u==0):
+			ta = PrettyTable(['N', 'Insertion Sort Time'])  # se define el nombre de las columnas de la tabla
+			for index in range(0, len(insrep)):
+				ta.add_row([nlist[index], insrep[index]])
+			self.crearArchivoYguardar(ta)
 			pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
 			pyplot.legend(loc='upper left')
 			pyplot.show()
 		else:
 			if (v==1 and t==0 and u==0):
+				ta = PrettyTable(['N','Merge Sort Time'])  # se define el nombre de las columnas de la tabla
+				for index in range(0, len(insrep)):
+					ta.add_row([nlist[index], mergerep[index]])
+				self.crearArchivoYguardar(ta)
 				pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
 				pyplot.legend(loc='upper left')
 				pyplot.show()
 			else:
-				if (u==0 and t==0 and v==0):
+				if (u==1 and t==0 and v==0):
+					ta = PrettyTable(['N','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
+					for index in range(0, len(insrep)):
+						ta.add_row([nlist[index], quickrep[index]])
+					self.crearArchivoYguardar(ta)
 					pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
 					pyplot.legend(loc='upper left')
 					pyplot.show()
 
-		if t and v and u:
+		if t==1 and v==1 and u==1:
+			ta = PrettyTable(['N', 'Insertion Sort Time', 'Merge Sort Time','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
+			for index in range(0, len(insrep)):
+				ta.add_row([nlist[index], insrep[index], mergerep[index], quickrep[index]])
+			self.crearArchivoYguardar(ta)
 			pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
 			pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
 			pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
 			pyplot.legend(loc='upper left')
 			pyplot.show()
 		else:
-			if t and v:
+			if t==1 and v==1 and u==0:
+				ta = PrettyTable(['N', 'Insertion Sort Time', 'Merge Sort Time'])  # se define el nombre de las columnas de la tabla
+				for index in range(0, len(insrep)):
+					ta.add_row([nlist[index], insrep[index], mergerep[index]])
+				self.crearArchivoYguardar(ta)
 				pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
 				pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
 				pyplot.legend(loc='upper left')
 				pyplot.show()
 			else:
-				if t and u:
+				if t==1 and u==1 and v==0:
+					ta = PrettyTable(['N', 'Insertion Sort Time','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
+					for index in range(0, len(insrep)):
+						ta.add_row([nlist[index], insrep[index], quickrep[index]])
+					self.crearArchivoYguardar(t)
 					pyplot.line = pyplot.plot(nlist, insrep, label='Insertion Sort')
 					pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
 					pyplot.legend(loc='upper left')
 					pyplot.show()
 				else:
-					if u and v:
+					if u==1 and v==1 and t==0:
+						ta = PrettyTable(['N','Merge Sort Time','Quick Sort Time'])  # se define el nombre de las columnas de la tabla
+						for index in range(0, len(insrep)):
+							ta.add_row([nlist[index],mergerep[index], quickrep[index]])
+						self.crearArchivoYguardar(ta)
 						pyplot.line = pyplot.plot(nlist, mergerep, label='Merge Sort')
 						pyplot.line = pyplot.plot(nlist, quickrep, label='Quick Sort')
 						pyplot.legend(loc='upper left')
